@@ -1,0 +1,21 @@
+El sistema comprende la gestión integral de la venta en línea de productos de pesca, abarcando desde la navegación del catálogo por parte de los clientes hasta la entrega del pedido. Incluye la administración de productos, categorías, stock e imágenes; el registro y autenticación de clientes y administradores; el manejo del carrito de compras; la generación, confirmación y seguimiento de pedidos a través de sus distintos estados (pendiente, pagado, en preparación, enviado, entregado, cancelado); y el registro de movimientos de inventario.
+Quedan fuera del alcance del proyecto la integración con pasarelas de pago reales (se modelará el registro del pago, no su procesamiento externo), la logística de envíos con transportistas externos, y la atención al cliente a través de canales adicionales (chat, telefonía, etc.). El desarrollo se centra en el modelo de datos y la lógica de negocio de la plataforma, no en aspectos de infraestructura o despliegue.
+•	RN.01 — Todo usuario que desee realizar una compra debe registrarse en la plataforma con un correo electrónico único y una contraseña.
+•	RN.02 — Un cliente puede tener asociada una o varias direcciones de envío, pero debe indicar cuál utilizar al momento de confirmar un pedido.
+•	RN.03 — Un cliente puede consultar el catálogo de productos sin necesidad de estar registrado, pero debe iniciar sesión para agregar productos al carrito y finalizar una compra.
+•	RN.04 — Cada producto pertenece a una única categoría (por ejemplo: cañas, reels, señuelos, líneas, accesorios).
+•	RN.05 — Todo producto debe contar con nombre, descripción, precio unitario y stock disponible.
+•	RN.06 — Un producto solo puede publicarse en el catálogo si su stock es mayor a cero; si el stock llega a cero, el sistema debe marcarlo automáticamente como "sin stock" y no permitir su compra.
+•	RN.07 — El precio de un producto es definido y modificado exclusivamente por un administrador.
+•	RN.08 — Un carrito de compras pertenece a un único cliente y puede contener uno o varios productos, cada uno con una cantidad especificada.
+•	RN.09 — La cantidad de un producto agregada al carrito no puede superar el stock disponible del mismo.
+•	RN.10 — El carrito se vacía automáticamente una vez que el pedido asociado es confirmado.
+•	RN.11 — Un pedido es generado por un único cliente y puede incluir uno o varios productos, cada uno con su cantidad y precio al momento de la compra.
+•	RN.12 — Al confirmarse un pedido, el sistema debe descontar automáticamente del stock la cantidad de cada producto adquirido.
+•	RN.13 — Todo pedido debe pasar por una serie de estados definidos (pendiente, pagado, en preparación, enviado, entregado, cancelado), y solo puede avanzar de un estado a otro siguiendo un orden establecido.
+•	RN.14 — Un pedido no puede confirmarse si alguno de los productos incluidos no cuenta con stock suficiente al momento de la confirmación.
+•	RN.15 — El monto total de un pedido se calcula como la suma de los subtotales (precio por cantidad) de cada producto incluido.
+•	RN.16 — Solo los usuarios con rol de administrador pueden dar de alta, modificar o eliminar productos, categorías y gestionar el stock del inventario.
+•	RN.17 — Todo administrador debe quedar registrado como usuario del sistema, diferenciado del rol de cliente mediante un tipo o rol de usuario.
+•	RN.18 — Los administradores pueden actualizar el estado de un pedido, pero no pueden modificar los productos ni las cantidades de un pedido ya confirmado.
+•	RN.19 — Toda modificación de stock realizada manualmente por un administrador debe quedar registrada, indicando el producto, la cantidad modificada y la fecha del cambio.
