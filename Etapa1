@@ -19,3 +19,5 @@ Quedan fuera del alcance del proyecto la integración con pasarelas de pago real
 •	RN.17 — Todo administrador debe quedar registrado como usuario del sistema, diferenciado del rol de cliente mediante un tipo o rol de usuario.
 •	RN.18 — Los administradores pueden actualizar el estado de un pedido, pero no pueden modificar los productos ni las cantidades de un pedido ya confirmado.
 •	RN.19 — Toda modificación de stock realizada manualmente por un administrador debe quedar registrada, indicando el producto, la cantidad modificada y la fecha del cambio.
+•	RN.20 – Cada producto puede tener una o múltiples variantes, por lo que el inventario (stock) y los precios unitarios deben gestionarse a nivel de la variante del producto y no del producto general.
+•	RN.21 – Al momento de concretar y confirmar un pedido, el cliente debe poder optar entre utilizar una de sus direcciones de envío registradas o seleccionar la opción de retiro en sucursal.
