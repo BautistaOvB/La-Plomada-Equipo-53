@@ -2,6 +2,13 @@
 
 ```mermaid
 erDiagram
+  movimientos_stock {
+    bigint id PK
+    bigint var_productos_id FK
+    bigint admin_id FK
+    int cantidad_modificada
+    datetime fecha
+  }
   users {
     bigint id PK
     string name
@@ -79,4 +86,6 @@ erDiagram
   compras       ||--o{ detalle_compras  : incluye
   var_productos ||--o{ detalle_compras  : vendido-en
   compras       }o--|| direcciones      : usa
+  var_productos ||--o{ movimientos_stock: registra
+  users         ||--o{ movimientos_stock: realiza
 ```
