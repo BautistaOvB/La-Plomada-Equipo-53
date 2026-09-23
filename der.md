@@ -37,11 +37,21 @@ erDiagram
   direcciones {
     bigint id PK
     bigint user_id FK
-    string provincia
-    string ciudad
+    bigint ciudad_id FK
     string calle
     string altura
   }
+  provincias {
+    bigint id PK
+    string nombre
+  }
+  ciudades {
+    bigint id PK
+    bigint provincia_id FK
+    string nombre
+    string codigo_postal
+  }
+  
   carritos {
     bigint id PK
     bigint user_id FK
@@ -81,4 +91,6 @@ erDiagram
   compras       }o--|| direcciones      : usa
   var_productos ||--o{ movimientos_stock: registra
   users         ||--o{ movimientos_stock: realiza
+  provincias    ||--o{ ciudades    : tiene
+  ciudades      ||--o{ direcciones : pertenece
 ```
