@@ -2,13 +2,6 @@
 
 ```mermaid
 erDiagram
-  movimientos_stock {
-    bigint id PK
-    bigint var_productos_id FK
-    bigint admin_id FK
-    int cantidad_modificada
-    datetime fecha
-  }
   users {
     bigint id PK
     string name
@@ -16,6 +9,13 @@ erDiagram
     string email
     string password
     string rol
+  }
+ movimientos_stock {
+    bigint id PK
+    bigint var_productos_id FK
+    bigint admin_id FK
+    int cantidad_modificada
+    datetime fecha
   }
   categorias {
     bigint id PK
@@ -67,13 +67,6 @@ erDiagram
     bigint var_productos_id FK
     int cantidad
     decimal precio_unitario
-  }
-  contactos {
-    bigint id PK
-    string nombre
-    string email
-    string asunto
-    string mensaje
   }
 
   users         ||--o{ carritos         : tiene
