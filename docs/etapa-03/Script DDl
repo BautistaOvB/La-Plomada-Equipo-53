@@ -1,0 +1,31 @@
+CREATE DATABASE laplomada-database;
+
+USE laplomada-database;
+
+CREATE TABLE Categoria
+(
+  id_Categoria INT INDENTITY(1, 1) NOT NULL,
+  nombre_categoria VARCHAR(100) NOT NULL,
+  PRIMARY KEY (id_Categoria)
+);
+
+CREATE TABLE Producto
+(
+  id_Producto INT INDENTITY(1, 1) NOT NULL,
+  nombre_producto VARCHAR(100) NOT NULL,
+  id_Categoria INT NOT NULL,
+  PRIMARY KEY (id_Producto),
+  FOREIGN KEY (id_Categoria) REFERENCES Categoria(id_Categoria)
+);
+
+CREATE TABLE Var_Producto
+(
+  id_VarProducto INT INDENTITY(1, 1) NOT NULL,
+  url_image VARCHAR(200) NOT NULL,
+  stock INT NOT NULL,
+  descripcion VARCHAR(100) NOT NULL,
+  precio FLOAT NOT NULL,
+  id_Producto INT NOT NULL,
+  PRIMARY KEY (id_VarProducto),
+  FOREIGN KEY (id_Producto) REFERENCES Producto(id_Producto)
+);
