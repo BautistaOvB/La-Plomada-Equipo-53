@@ -60,3 +60,54 @@ INSERT INTO Var_Producto (id_VarProducto, url_image, stock, descripcion, precio,
 ('https://img.ejemplo.com/tecno/auriculares-negro-anc.jpg', 50, 'Cancelación activa de ruido - Color Negro', 75.00, 6),
 ('https://img.ejemplo.com/hogar/lampara-led-blanca.jpg', 20, 'Luz cálida/fría regulable - Táctil', 34.80, 7),
 ('https://img.ejemplo.com/equipaje/mochila-gris-20l.jpg', 35, 'Capacidad 20L - Compartimento para notebook', 45.00, 8);
+
+
+create table compras(
+    id int identity (1,1) primary key,
+    user_id int not null,
+    direccion_id int null,
+    
+    metodo_pago varchar(20) not null,
+    retiro_sucursal bit not null default 0,
+    total decimal (10,2) not null,
+    estado varchar(20) not null default 'PENDIENTE',
+    fecha_compra date not null getdate(),
+)
+
+alter table compras
+add constraint fk_compras_users foreign key (user_id) references user(id) on delete no action;
+
+alter table compras
+add constraint fk_compras_direcciones foreign key (direccion_id) references direcciones(id) on delete no action;
+
+alter table compras
+add constraint ck_compras_total check (total>0);
+
+alter table compras 
+add constraint ck_compras_estado check(estado IN('PENDIENTE', 'PAGADO', 'EN PREPARACION' ,'ENVIADO' ,'ENTREGADO', 'CANCELADO'));
+
+alter table compras
+add constraint ck_compras_metodo_pago check(metodo_pago IN ('EFECTIVO' , 'TARJETA' , 'TRANSFERENCIA'));
+
+alter table compras
+add constraint ck_compras_entrega check((retiro_sucursal = 1 and direccion_id is null) or (retiro_sucursal = 0 and dirccion_id is not null));
+
+create table detalle_compras (
+    id int identity(1,1),
+    compra_id int not null,
+    var_productos_id int not null,
+    cantidad int not null,
+    precio_unitario decimal(10,2) not null,
+);
+
+alter table detalle_compras
+add constraint fk_detallecompras_compras foreign key (compra_id) references compras(id) on delete cascade;
+
+alter table detalle_compras
+add constraint fk_detallecompras_varproductos foreign key (var_productos_id) references var_productos(id) on delete no action;
+ 
+alter table detalle_compras
+add constraint ck_detallecompras_cantidad check =(cantidad>0);
+
+alter table detalle_compras
+add constraint ck_detallecompras_precio check (precio_unitario > 0);
