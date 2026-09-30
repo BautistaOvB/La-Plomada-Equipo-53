@@ -8,6 +8,17 @@ CREATE TABLE Categoria
   nombre_categoria VARCHAR(100) NOT NULL,
   PRIMARY KEY (id_Categoria)
 );
+-- 1. Inserción de 8 Categorías
+INSERT INTO Categoria (id_Categoria, nombre_categoria) VALUES
+INSERT INTO Categoria (nombre_categoria) VALUES
+('Calzado'),
+('Ropa Superior'),
+('Ropa Inferior'),
+('Accesorios'),
+('Deportes'),
+('Tecnología'),
+('Hogar'),
+('Equipaje');
 
 CREATE TABLE Producto
 (
@@ -17,6 +28,16 @@ CREATE TABLE Producto
   PRIMARY KEY (id_Producto),
   FOREIGN KEY (id_Categoria) REFERENCES Categoria(id_Categoria)
 );
+-- 2. Inserción de 8 Productos asociados a las categorías
+INSERT INTO Producto (id_Producto, nombre_producto, id_Categoria) VALUES
+('Zapatillas Running Pro', 1),
+('Camiseta Básica de Algodón', 2),
+('Pantalón Jean Slim Fit', 3),
+('Reloj Cronógrafo Deportivo', 4),
+('Mat de Yoga Antideslizante', 5),
+('Auriculares Inalámbricos Bluetooth', 6),
+('Lámpara de Escritorio LED', 7),
+('Mochila Urbana Impermeable', 8);
 
 CREATE TABLE Var_Producto
 (
@@ -29,3 +50,13 @@ CREATE TABLE Var_Producto
   PRIMARY KEY (id_VarProducto),
   FOREIGN KEY (id_Producto) REFERENCES Producto(id_Producto)
 );
+-- 3. Inserción de 8 Variantes de Producto asociadas a los productos
+INSERT INTO Var_Producto (id_VarProducto, url_image, stock, descripcion, precio, id_Producto) VALUES
+('https://img.ejemplo.com/calzado/running-negro-42.jpg', 25, 'Talle 42 - Color Negro con suela blanca', 89.99, 1),
+('https://img.ejemplo.com/ropa/camiseta-blanca-m.jpg', 60, 'Talle M - Color Blanco 100% algodón', 19.50, 2),
+('https://img.ejemplo.com/ropa/jean-azul-32.jpg', 30, 'Talle 32 - Azul Clásico lavado suave', 49.00, 3),
+('https://img.ejemplo.com/accesorios/reloj-cuero-marron.jpg', 15, 'Malla de cuero marrón, caja de acero', 120.00, 4),
+('https://img.ejemplo.com/deportes/mat-yoga-morado.jpg', 40, 'Espesor 6mm - Color Morado con correa', 29.90, 5),
+('https://img.ejemplo.com/tecno/auriculares-negro-anc.jpg', 50, 'Cancelación activa de ruido - Color Negro', 75.00, 6),
+('https://img.ejemplo.com/hogar/lampara-led-blanca.jpg', 20, 'Luz cálida/fría regulable - Táctil', 34.80, 7),
+('https://img.ejemplo.com/equipaje/mochila-gris-20l.jpg', 35, 'Capacidad 20L - Compartimento para notebook', 45.00, 8);
