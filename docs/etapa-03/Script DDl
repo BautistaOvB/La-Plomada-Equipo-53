@@ -111,3 +111,34 @@ add constraint ck_detallecompras_cantidad check =(cantidad>0);
 
 alter table detalle_compras
 add constraint ck_detallecompras_precio check (precio_unitario > 0);
+
+INSERT INTO compras (user_id, direccion_id, metodo_pago, retiro_sucursal, total, estado, fecha_compra)
+VALUES (1, 1, 'TARJETA', 0, 45000.00, 'ENTREGADO', '2026-08-01'),
+        (2, 2, 'EFECTIVO', 0, 18500.00, 'ENVIADO', '2026-08-05'),
+        (3, 3, 'TRANSFERENCIA', 0, 92300.00, 'PAGADO', '2026-08-10'),
+        (4, 4, 'TARJETA', 0, 12000.00, 'EN_PREPARACION', '2026-08-12'),
+        (5, 5, 'TARJETA', 0, 67000.00, 'PENDIENTE', '2026-08-15'),
+        (6, NULL, 'EFECTIVO', 1, 8900.00, 'ENTREGADO', '2026-08-03'),
+        (7, NULL, 'TARJETA', 1, 34500.00, 'PAGADO', '2026-08-08'),
+        (1, NULL, 'TRANSFERENCIA', 1, 15800.00, 'ENVIADO', '2026-08-14');
+
+INSERT INTO detalle_compras (compra_id, var_productos_id, cantidad, precio_unitario) 
+VALUES (1, 1, 2, 15000.00),
+        (1, 2, 1, 15000.00),
+
+        (2, 3, 5, 3700.00),
+
+        (3, 4, 1, 85000.00),
+        (3, 5, 1, 7300.00),
+
+        (4, 6, 3, 4000.00),
+        
+
+        (5, 7, 1, 62000.00),
+        (5, 8, 1, 5000.00),
+
+        (6, 9, 1, 8900.00),
+
+        (7, 10, 3, 11500.00),
+
+        (8, 1, 2, 7900.00);
