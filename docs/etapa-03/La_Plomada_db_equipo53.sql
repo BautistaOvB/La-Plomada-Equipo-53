@@ -139,7 +139,19 @@ CREATE TABLE usuario (
     apellido VARCHAR(50) NOT NULL,
     contrasena VARCHAR(255) NOT NULL
 );
---------------tabla movimiento_stock
+----------constraints para usuario ------------
+-- Clave Primaria
+ALTER TABLE usuario 
+ADD CONSTRAINT PK_usuario PRIMARY KEY (id_usuario);
+-- RN.01: "correo electrónico único"
+ALTER TABLE usuario 
+ADD CONSTRAINT UQ_usuario_email UNIQUE (email);
+-- RN.17: "diferenciado mediante un tipo o rol de usuario"
+-- Obligamos a que el rol solo pueda ser 'cliente' o 'administrador'
+ALTER TABLE usuario 
+ADD CONSTRAINT CHK_usuario_rol CHECK (rol IN ('cliente', 'administrador'));
+
+--------------tabla movimiento_stock ------------
 CREATE TABLE movimiento_stock (
     id_movimiento INT IDENTITY(1,1),
     var_productos_id INT NOT NULL,
