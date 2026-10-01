@@ -1,13 +1,4 @@
-CREATE DATABASE laplomada-database;
 
-USE laplomada-database;
-
-CREATE TABLE Categoria
-(
-  id_Categoria INT INDENTITY(1, 1) NOT NULL,
-  nombre_categoria VARCHAR(100) NOT NULL,
-  PRIMARY KEY (id_Categoria)
-);
 -- 1. Inserción de 8 Categorías
 INSERT INTO Categoria (id_Categoria, nombre_categoria) VALUES
 INSERT INTO Categoria (nombre_categoria) VALUES
@@ -20,14 +11,6 @@ INSERT INTO Categoria (nombre_categoria) VALUES
 ('Hogar'),
 ('Equipaje');
 
-CREATE TABLE Producto
-(
-  id_Producto INT INDENTITY(1, 1) NOT NULL,
-  nombre_producto VARCHAR(100) NOT NULL,
-  id_Categoria INT NOT NULL,
-  PRIMARY KEY (id_Producto),
-  FOREIGN KEY (id_Categoria) REFERENCES Categoria(id_Categoria)
-);
 -- 2. Inserción de 8 Productos asociados a las categorías
 INSERT INTO Producto (id_Producto, nombre_producto, id_Categoria) VALUES
 ('Zapatillas Running Pro', 1),
@@ -39,17 +22,6 @@ INSERT INTO Producto (id_Producto, nombre_producto, id_Categoria) VALUES
 ('Lámpara de Escritorio LED', 7),
 ('Mochila Urbana Impermeable', 8);
 
-CREATE TABLE Var_Producto
-(
-  id_VarProducto INT INDENTITY(1, 1) NOT NULL,
-  url_image VARCHAR(200) NOT NULL,
-  stock INT NOT NULL,
-  descripcion VARCHAR(100) NOT NULL,
-  precio FLOAT NOT NULL,
-  id_Producto INT NOT NULL,
-  PRIMARY KEY (id_VarProducto),
-  FOREIGN KEY (id_Producto) REFERENCES Producto(id_Producto)
-);
 -- 3. Inserción de 8 Variantes de Producto asociadas a los productos
 INSERT INTO Var_Producto (id_VarProducto, url_image, stock, descripcion, precio, id_Producto) VALUES
 ('https://img.ejemplo.com/calzado/running-negro-42.jpg', 25, 'Talle 42 - Color Negro con suela blanca', 89.99, 1),
@@ -61,56 +33,6 @@ INSERT INTO Var_Producto (id_VarProducto, url_image, stock, descripcion, precio,
 ('https://img.ejemplo.com/hogar/lampara-led-blanca.jpg', 20, 'Luz cálida/fría regulable - Táctil', 34.80, 7),
 ('https://img.ejemplo.com/equipaje/mochila-gris-20l.jpg', 35, 'Capacidad 20L - Compartimento para notebook', 45.00, 8);
 
-
-create table compras(
-    id int identity (1,1) primary key,
-    user_id int not null,
-    direccion_id int null,
-    
-    metodo_pago varchar(20) not null,
-    retiro_sucursal bit not null default 0,
-    total decimal (10,2) not null,
-    estado varchar(20) not null default 'PENDIENTE',
-    fecha_compra date not null getdate(),
-)
-
-alter table compras
-add constraint fk_compras_users foreign key (user_id) references user(id) on delete no action;
-
-alter table compras
-add constraint fk_compras_direcciones foreign key (direccion_id) references direcciones(id) on delete no action;
-
-alter table compras
-add constraint ck_compras_total check (total>0);
-
-alter table compras 
-add constraint ck_compras_estado check(estado IN('PENDIENTE', 'PAGADO', 'EN PREPARACION' ,'ENVIADO' ,'ENTREGADO', 'CANCELADO'));
-
-alter table compras
-add constraint ck_compras_metodo_pago check(metodo_pago IN ('EFECTIVO' , 'TARJETA' , 'TRANSFERENCIA'));
-
-alter table compras
-add constraint ck_compras_entrega check((retiro_sucursal = 1 and direccion_id is null) or (retiro_sucursal = 0 and dirccion_id is not null));
-
-create table detalle_compras (
-    id int identity(1,1),
-    compra_id int not null,
-    var_productos_id int not null,
-    cantidad int not null,
-    precio_unitario decimal(10,2) not null,
-);
-
-alter table detalle_compras
-add constraint fk_detallecompras_compras foreign key (compra_id) references compras(id) on delete cascade;
-
-alter table detalle_compras
-add constraint fk_detallecompras_varproductos foreign key (var_productos_id) references var_productos(id) on delete no action;
- 
-alter table detalle_compras
-add constraint ck_detallecompras_cantidad check =(cantidad>0);
-
-alter table detalle_compras
-add constraint ck_detallecompras_precio check (precio_unitario > 0);
 
 INSERT INTO compras (user_id, direccion_id, metodo_pago, retiro_sucursal, total, estado, fecha_compra)
 VALUES (1, 1, 'TARJETA', 0, 45000.00, 'ENTREGADO', '2026-08-01'),
@@ -143,33 +65,8 @@ VALUES (1, 1, 2, 15000.00),
 
         (8, 1, 2, 7900.00);
 
-----Insersion de tabla Carrito y detalle carrito
 
-
-CREATE TABLE carritos (
-    id INT IDENTITY(1,1) PRIMARY KEY,
-    user_id INT NOT NULL
 );
-
-ALTER TABLE carritos
-ADD CONSTRAINT fk_carritos_users FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
-
-
-CREATE TABLE detalle_carritos (
-    id INT IDENTITY(1,1) PRIMARY KEY,
-    carrito_id INT NOT NULL,
-    var_productos_id INT NOT NULL,
-    cantidad INT NOT NULL
-);
-
-ALTER TABLE detalle_carritos
-ADD CONSTRAINT fk_detallecarritos_carritos FOREIGN KEY (carrito_id) REFERENCES carritos(id) ON DELETE CASCADE;
-
-ALTER TABLE detalle_carritos
-ADD CONSTRAINT fk_detallecarritos_varproductos FOREIGN KEY (var_productos_id) REFERENCES Var_Producto(id_VarProducto) ON DELETE NO ACTION;
-
-ALTER TABLE detalle_carritos
-ADD CONSTRAINT ck_detallecarritos_cantidad CHECK (cantidad > 0);
 
 -- Carga de datos de carritos
 INSERT INTO carritos (user_id) VALUES (1), (2), (3), (4), (5), (6), (7), (8);
