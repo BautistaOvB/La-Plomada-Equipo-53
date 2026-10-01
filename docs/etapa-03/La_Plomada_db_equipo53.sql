@@ -35,7 +35,7 @@ CREATE TABLE provincia(
 	nombre varchar(50) not null
 );
 
-CREATE TABLE direcciones(
+CREATE TABLE direccion(
 	id_direccion int PRIMARY KEY,
 	id_ciudad int,
 	id_provincia int,
@@ -55,12 +55,12 @@ CREATE TABLE categoria(
 	nombre varchar(50) not null
 );
 
-CREATE TABLE productos(
-	id_productos int PRIMARY KEY IDENTITY(1,1),
+CREATE TABLE producto(
+	id_producto int PRIMARY KEY IDENTITY(1,1),
 	nombre varchar(75),
 	id_categoria int,
 
-	CONSTRAINT FK_categoria_productos
+	CONSTRAINT FK_categoria_producto
 	FOREIGN KEY (id_categoria) REFERENCES categoria(id_categoria)
 );
 
@@ -73,61 +73,47 @@ CREATE TABLE compra(
 	id_direccion int,
 	id_usuario int,
 	CONSTRAINT FK_compra_direccion
-	FOREIGN KEY (id_direccion) REFERENCES direcciones(id_direccion),
+	FOREIGN KEY (id_direccion) REFERENCES direccion(id_direccion),
 	CONSTRAINT FK_compra_usuario 
 	FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario)
 );
 
 CREATE TABLE carrito (
     id INT IDENTITY(1,1) PRIMARY KEY,
-    user_id INT NOT NULL
+    id_usuario INT NOT NULL
 );
 
 ALTER TABLE carrito
-ADD CONSTRAINT fk_carritos_users FOREIGN KEY (user_id) REFERENCES usuario(id_usuario) ON DELETE CASCADE;
+ADD CONSTRAINT FK_usuario_carrito FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario) ON DELETE CASCADE;
 
-CREATE TABLE var_productos(
+CREATE TABLE var_producto(
 	id_varProductos int PRIMARY KEY IDENTITY(1,1),
 	url_img varchar(75),
 	stock int,
 	precio DECIMAL(10,2),
 	id_productos int,
 	
-	CONSTRAINT FK_var_productos
-	FOREIGN KEY (id_productos) REFERENCES productos(id_productos)
+	CONSTRAINT FK_var_producto
+	FOREIGN KEY (id_producto) REFERENCES producto(id_productos)
 );
 
-CREATE TABLE detalle_carritos (
+CREATE TABLE detalle_carrito (
     id INT IDENTITY(1,1) PRIMARY KEY,
     carrito_id INT NOT NULL,
-    var_productos_id INT NOT NULL,
+    var_producto_id INT NOT NULL,
     cantidad INT NOT NULL
 );
 
-ALTER TABLE detalle_carritos
-ADD CONSTRAINT fk_detallecarritos_carritos FOREIGN KEY (carrito_id) REFERENCES carritos(id) ON DELETE CASCADE;
+ALTER TABLE detalle_carrito
+ADD CONSTRAINT FK_detallecarrito_carrito FOREIGN KEY (carrito_id) REFERENCES carrito(id) ON DELETE CASCADE;
 
-ALTER TABLE detalle_carritos
-ADD CONSTRAINT fk_detallecarritos_varproductos FOREIGN KEY (var_productos_id) REFERENCES Var_Producto(id_VarProducto) ON DELETE NO ACTION;
+ALTER TABLE detalle_carrito
+ADD CONSTRAINT fk_detallecarrito_varproducto FOREIGN KEY (var_producto_id) REFERENCES Var_Producto(id_VarProducto) ON DELETE NO ACTION;
 
-ALTER TABLE detalle_carritos
-ADD CONSTRAINT ck_detallecarritos_cantidad CHECK (cantidad > 0);
-
-
+ALTER TABLE detalle_carrito
+ADD CONSTRAINT ck_detallecarrito_cantidad CHECK (cantidad > 0);
 
 
-CREATE TABLE movimientos_stock(
-	id_movimientosStock int PRIMARY KEY IDENTITY(1,1),
-	cantidad_modificada int,
-	fecha DATETIME DEFAULT GETDATE(),
-	id_varProductos int,
-	id_usuario int
-
-	CONSTRAINT FK_movimientos_varProductos
-	FOREIGN KEY (id_varProductos) REFERENCES var_productos(id_varProductos),
-	CONSTRAINT FK_movimientos_usuarios
-	FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario)
-);
 
 CREATE TABLE detalle_compras(
 	id_detalleCompra INT PRIMARY KEY IDENTITY(1,1),
@@ -136,10 +122,10 @@ CREATE TABLE detalle_compras(
 	id_compra int,
 	id_varProductos int,
 
-	CONSTRAINT FK_detalleCompras_compras
+	CONSTRAINT FK_detalleCompra_compra
 	FOREIGN KEY (id_compra) REFERENCES compra(id_compra),
 	CONSTRAINT FK_varProducto_detalleCompra
-	FOREIGN KEY (id_varProductos) REFERENCES var_productos(id_varProductos)
+	FOREIGN KEY (id_varProducto) REFERENCES var_producto(id_varProductos)
 );
 
 --------------tabla movimiento_stock ------------
