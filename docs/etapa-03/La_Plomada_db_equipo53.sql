@@ -78,13 +78,13 @@ CREATE TABLE compra(
 	FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario)
 );
 
-CREATE TABLE carritos (
+CREATE TABLE carrito (
     id INT IDENTITY(1,1) PRIMARY KEY,
     user_id INT NOT NULL
 );
 
-ALTER TABLE carritos
-ADD CONSTRAINT fk_carritos_users FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+ALTER TABLE carrito
+ADD CONSTRAINT fk_carritos_users FOREIGN KEY (user_id) REFERENCES usuario(id_usuario) ON DELETE CASCADE;
 
 CREATE TABLE var_productos(
 	id_varProductos int PRIMARY KEY IDENTITY(1,1),
