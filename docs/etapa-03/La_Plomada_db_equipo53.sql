@@ -51,7 +51,7 @@ CREATE TABLE direccion(
 );
 
 CREATE TABLE categoria(
-	id_categoria int PRIMARY KEY,
+	id_categoria int PRIMARY KEY IDENTITY(1,1),
 	nombre varchar(50) not null
 );
 
@@ -117,8 +117,8 @@ ADD CONSTRAINT ck_detallecarrito_cantidad CHECK (cantidad > 0);
 
 CREATE TABLE detalle_compras(
 	id_detalleCompra INT PRIMARY KEY IDENTITY(1,1),
-	estado varchar(35),
 	cantidad int,
+	precio_unitario DECIMAL(10,2),
 	id_compra int,
 	id_varProductos int,
 
