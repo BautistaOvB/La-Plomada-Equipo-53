@@ -3,14 +3,26 @@ GO
 USE La_Plomada_db;
 GO
 
-CREATE TABLE usuario(
-	id_usuario int PRIMARY KEY IDENTITY(1,1),
-	mail varchar(75) unique,
-	rol varchar(50) DEFAULT 'cliente',
-	nombre varchar(25),
-	apellido varchar(25),
-	contrasena varchar(255) NOT NULL
+------------ tabla usuario ------------------
+CREATE TABLE usuario (
+    id_usuario INT IDENTITY(1,1),
+    email VARCHAR(100) NOT NULL,
+    rol VARCHAR(15) NOT NULL,
+    nombre VARCHAR(50) NOT NULL,
+    apellido VARCHAR(50) NOT NULL,
+    contrasena VARCHAR(255) NOT NULL
 );
+----------constraints para usuario ------------
+-- Clave Primaria
+ALTER TABLE usuario 
+ADD CONSTRAINT PK_usuario PRIMARY KEY (id_usuario);
+-- RN.01: "correo electrónico único"
+ALTER TABLE usuario 
+ADD CONSTRAINT UQ_usuario_email UNIQUE (email);
+-- RN.17: "diferenciado mediante un tipo o rol de usuario"
+-- Obligamos a que el rol solo pueda ser 'cliente' o 'administrador'
+ALTER TABLE usuario 
+ADD CONSTRAINT CHK_usuario_rol CHECK (rol IN ('cliente', 'administrador'));
 
 CREATE TABLE ciudad(
 	id_ciudad int PRIMARY KEY,
@@ -129,27 +141,6 @@ CREATE TABLE detalle_compras(
 	CONSTRAINT FK_varProducto_detalleCompra
 	FOREIGN KEY (id_varProductos) REFERENCES var_productos(id_varProductos)
 );
-
------------- tabla usuario ------------------
-CREATE TABLE usuario (
-    id_usuario INT IDENTITY(1,1),
-    email VARCHAR(100) NOT NULL,
-    rol VARCHAR(15) NOT NULL,
-    nombre VARCHAR(50) NOT NULL,
-    apellido VARCHAR(50) NOT NULL,
-    contrasena VARCHAR(255) NOT NULL
-);
-----------constraints para usuario ------------
--- Clave Primaria
-ALTER TABLE usuario 
-ADD CONSTRAINT PK_usuario PRIMARY KEY (id_usuario);
--- RN.01: "correo electrónico único"
-ALTER TABLE usuario 
-ADD CONSTRAINT UQ_usuario_email UNIQUE (email);
--- RN.17: "diferenciado mediante un tipo o rol de usuario"
--- Obligamos a que el rol solo pueda ser 'cliente' o 'administrador'
-ALTER TABLE usuario 
-ADD CONSTRAINT CHK_usuario_rol CHECK (rol IN ('cliente', 'administrador'));
 
 --------------tabla movimiento_stock ------------
 CREATE TABLE movimiento_stock (
