@@ -129,3 +129,21 @@ CREATE TABLE detalle_compras(
 	CONSTRAINT FK_varProducto_detalleCompra
 	FOREIGN KEY (id_varProductos) REFERENCES var_productos(id_varProductos)
 );
+
+------------ tabla usuario ------------------
+CREATE TABLE usuario (
+    id_usuario INT IDENTITY(1,1),
+    email VARCHAR(100) NOT NULL,
+    rol VARCHAR(15) NOT NULL,
+    nombre VARCHAR(50) NOT NULL,
+    apellido VARCHAR(50) NOT NULL,
+    contrasena VARCHAR(255) NOT NULL
+);
+--------------tabla movimiento_stock
+CREATE TABLE movimiento_stock (
+    id_movimiento INT IDENTITY(1,1),
+    var_productos_id INT NOT NULL,
+    admin_id INT NOT NULL,
+    cantidad_modificada INT NOT NULL,
+    fecha DATETIME NOT NULL
+);
