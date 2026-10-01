@@ -24,30 +24,30 @@ ADD CONSTRAINT UQ_usuario_email UNIQUE (email);
 ALTER TABLE usuario 
 ADD CONSTRAINT CHK_usuario_rol CHECK (rol IN ('cliente', 'administrador'));
 
-CREATE TABLE ciudad(
-	id_ciudad int PRIMARY KEY,
-	codigo_postal varchar(10),
-	nombre varchar(100) not null
-);
-
 CREATE TABLE provincia(
-	id_provincia int PRIMARY KEY,
+	id_provincia int PRIMARY KEY IDENTITY(1,1),
 	nombre varchar(50) not null
 );
 
-CREATE TABLE direccion(
-	id_direccion int PRIMARY KEY,
-	id_ciudad int,
+CREATE TABLE ciudad(
+	id_ciudad int PRIMARY KEY IDENTITY(1,1),
 	id_provincia int,
+	codigo_postal varchar(10),
+	nombre varchar(100) not null,
+	
+	CONSTRAINT FK_ciudad_provincia
+	FOREIGN KEY (id_provincia) REFERENCES provincia(id_provincia)
+);
+
+CREATE TABLE direccion(
+	id_direccion int PRIMARY KEY IDENTITY(1,1),
+	id_ciudad int,
 	id_usuario int,
 	
 	CONSTRAINT FK_direccion_ciudad
 	FOREIGN KEY (id_ciudad) REFERENCES ciudad(id_ciudad),
-	CONSTRAINT FK_provincia_direccion
-	FOREIGN KEY (id_provincia) REFERENCES provincia(id_provincia),
 	CONSTRAINT FK_direccion_usuario
 	FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario)
-
 );
 
 CREATE TABLE categoria(
