@@ -16,7 +16,7 @@ CREATE TABLE usuario (
 -- Clave Primaria
 ALTER TABLE usuario 
 ADD CONSTRAINT PK_usuario PRIMARY KEY (id_usuario);
--- RN.01: "correo electrónico único"
+-- RN.01: "correo electrnico ǧnico"
 ALTER TABLE usuario 
 ADD CONSTRAINT UQ_usuario_email UNIQUE (email);
 -- RN.17: "diferenciado mediante un tipo o rol de usuario"
@@ -91,10 +91,10 @@ CREATE TABLE var_producto(
 	url_img varchar(75),
 	stock int,
 	precio DECIMAL(10,2),
-	id_productos int,
+	id_producto int,
 	
 	CONSTRAINT FK_var_producto
-	FOREIGN KEY (id_producto) REFERENCES producto(id_productos)
+	FOREIGN KEY (id_producto) REFERENCES producto(id_producto)
 );
 
 CREATE TABLE detalle_carrito (
@@ -108,7 +108,7 @@ ALTER TABLE detalle_carrito
 ADD CONSTRAINT FK_detallecarrito_carrito FOREIGN KEY (carrito_id) REFERENCES carrito(id) ON DELETE CASCADE;
 
 ALTER TABLE detalle_carrito
-ADD CONSTRAINT fk_detallecarrito_varproducto FOREIGN KEY (var_producto_id) REFERENCES Var_Producto(id_VarProducto) ON DELETE NO ACTION;
+ADD CONSTRAINT fk_detallecarrito_varproducto FOREIGN KEY (var_producto_id) REFERENCES var_producto(id_varProductos) ON DELETE NO ACTION;
 
 ALTER TABLE detalle_carrito
 ADD CONSTRAINT ck_detallecarrito_cantidad CHECK (cantidad > 0);
@@ -125,7 +125,7 @@ CREATE TABLE detalle_compras(
 	CONSTRAINT FK_detalleCompra_compra
 	FOREIGN KEY (id_compra) REFERENCES compra(id_compra),
 	CONSTRAINT FK_varProducto_detalleCompra
-	FOREIGN KEY (id_varProducto) REFERENCES var_producto(id_varProductos)
+	FOREIGN KEY (id_varProductos) REFERENCES var_producto(id_varProductos)
 );
 
 --------------tabla movimiento_stock ------------
@@ -140,19 +140,19 @@ CREATE TABLE movimiento_stock (
 -- Clave Primaria
 ALTER TABLE movimiento_stock 
 ADD CONSTRAINT PK_movimiento_stock PRIMARY KEY (id_movimiento);
--- Claves Foráneas
+-- Claves Forǭneas
 -- Relacionar con el admin que hizo el movimiento (RN.19)
 ALTER TABLE movimiento_stock 
 ADD CONSTRAINT FK_movimiento_admin FOREIGN KEY (admin_id) REFERENCES usuario(id_usuario);
 
--- Relación con la variante del producto (RN.19)
+-- Relacin con la variante del producto (RN.19)
 ALTER TABLE movimiento_stock 
-ADD CONSTRAINT FK_movimiento_var_producto FOREIGN KEY (var_productos_id) REFERENCES var_productos(id);
+ADD CONSTRAINT FK_movimiento_var_producto FOREIGN KEY (var_productos_id) REFERENCES var_producto(id_varProductos);
 -- Regla de integridad: La cantidad modificada no puede ser cero 
 -- (Puede ser positiva si agregan stock, o negativa si quitan, pero un movimiento de '0' no tiene sentido)
 ALTER TABLE movimiento_stock 
 ADD CONSTRAINT CHK_movimiento_cantidad CHECK (cantidad_modificada <> 0);
--- Regla de integridad: Fecha automática
--- Si no le pasan la fecha en el insert, guarda automáticamente la fecha y hora actual del servidor
+-- Regla de integridad: Fecha automǭtica
+-- Si no le pasan la fecha en el insert, guarda automǭticamente la fecha y hora actual del servidor
 ALTER TABLE movimiento_stock 
 ADD CONSTRAINT DF_movimiento_fecha DEFAULT GETDATE() FOR fecha;
