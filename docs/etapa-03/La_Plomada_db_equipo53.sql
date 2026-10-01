@@ -159,3 +159,23 @@ CREATE TABLE movimiento_stock (
     cantidad_modificada INT NOT NULL,
     fecha DATETIME NOT NULL
 );
+------------ constraints para movimiento_stock -----------
+-- Clave Primaria
+ALTER TABLE movimiento_stock 
+ADD CONSTRAINT PK_movimiento_stock PRIMARY KEY (id_movimiento);
+-- Claves Foráneas
+-- Relacionar con el admin que hizo el movimiento (RN.19)
+ALTER TABLE movimiento_stock 
+ADD CONSTRAINT FK_movimiento_admin FOREIGN KEY (admin_id) REFERENCES usuario(id_usuario);
+
+-- Relación con la variante del producto (RN.19)
+ALTER TABLE movimiento_stock 
+ADD CONSTRAINT FK_movimiento_var_producto FOREIGN KEY (var_productos_id) REFERENCES var_productos(id);
+-- Regla de integridad: La cantidad modificada no puede ser cero 
+-- (Puede ser positiva si agregan stock, o negativa si quitan, pero un movimiento de '0' no tiene sentido)
+ALTER TABLE movimiento_stock 
+ADD CONSTRAINT CHK_movimiento_cantidad CHECK (cantidad_modificada <> 0);
+-- Regla de integridad: Fecha automática
+-- Si no le pasan la fecha en el insert, guarda automáticamente la fecha y hora actual del servidor
+ALTER TABLE movimiento_stock 
+ADD CONSTRAINT DF_movimiento_fecha DEFAULT GETDATE() FOR fecha;
