@@ -66,13 +66,13 @@ CREATE TABLE compra(
 	FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario)
 );
 
-CREATE TABLE carrito(
-	id_carrito int PRIMARY KEY IDENTITY(1,1), 
-	id_usuario int,
-
-	CONSTRAINT FK_carrito_usuario
-	FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario)
+CREATE TABLE carritos (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    user_id INT NOT NULL
 );
+
+ALTER TABLE carritos
+ADD CONSTRAINT fk_carritos_users FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
 
 CREATE TABLE var_productos(
 	id_varProductos int PRIMARY KEY IDENTITY(1,1),
@@ -85,15 +85,24 @@ CREATE TABLE var_productos(
 	FOREIGN KEY (id_productos) REFERENCES productos(id_productos)
 );
 
-CREATE TABLE detalle_carrito(
-	id_detalleCarrito int PRIMARY KEY IDENTITY(1,1),
-	cantidad int,
-	id_carrito int, 
-	id_varProductos int,
-
-	CONSTRAINT FK_detalleCarrito_carrito
-	FOREIGN KEY (id_carrito) REFERENCES carrito(id_carrito)
+CREATE TABLE detalle_carritos (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    carrito_id INT NOT NULL,
+    var_productos_id INT NOT NULL,
+    cantidad INT NOT NULL
 );
+
+ALTER TABLE detalle_carritos
+ADD CONSTRAINT fk_detallecarritos_carritos FOREIGN KEY (carrito_id) REFERENCES carritos(id) ON DELETE CASCADE;
+
+ALTER TABLE detalle_carritos
+ADD CONSTRAINT fk_detallecarritos_varproductos FOREIGN KEY (var_productos_id) REFERENCES Var_Producto(id_VarProducto) ON DELETE NO ACTION;
+
+ALTER TABLE detalle_carritos
+ADD CONSTRAINT ck_detallecarritos_cantidad CHECK (cantidad > 0);
+
+
+
 
 CREATE TABLE movimientos_stock(
 	id_movimientosStock int PRIMARY KEY IDENTITY(1,1),
