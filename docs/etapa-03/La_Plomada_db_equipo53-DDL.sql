@@ -72,6 +72,7 @@ CREATE TABLE compra(
 	retiro_sucursal BIT DEFAULT 0, /* */
 	id_direccion int,
 	id_usuario int,
+	fecha_compra DATETIME DEFAULT GETDATE(),
 	CONSTRAINT FK_compra_direccion
 	FOREIGN KEY (id_direccion) REFERENCES direccion(id_direccion),
 	CONSTRAINT FK_compra_usuario 
@@ -91,6 +92,7 @@ CREATE TABLE var_producto(
 	url_img varchar(75),
 	stock int,
 	precio DECIMAL(10,2),
+	descripcion varchar(150),
 	id_producto int,
 	
 	CONSTRAINT FK_var_producto

@@ -5,12 +5,6 @@
 USE La_Plomada_db;
 GO
 
--- ¡ATENCIÓN! Agregamos estas columnas al DDL para no perder 
--- la descripcion y la fecha que habías puesto en tus INSERTS.
-ALTER TABLE var_producto ADD descripcion VARCHAR(150);
-ALTER TABLE compra ADD fecha_compra DATETIME DEFAULT GETDATE();
-GO
-
 -- 1. Inserción de Usuarios (Debe ir ANTES que direcciones y carritos)
 INSERT INTO usuario (email, rol, nombre, apellido, contrasena) VALUES
 ('cliente1@mail.com', 'cliente', 'Juan', 'Perez', 'hash123'),
