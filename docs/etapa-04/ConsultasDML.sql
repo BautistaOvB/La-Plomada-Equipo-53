@@ -60,7 +60,6 @@ SELECT
     MAX(resumen.Total_Gastado) AS Gasto_Maximo_Cliente,
     MIN(resumen.Total_Gastado) AS Gasto_Minimo_Cliente
 FROM (
-    -- Tabla derivada: calcula el total gastado por cada cliente
     SELECT 
         id_usuario,
         SUM(total) AS Total_Gastado
