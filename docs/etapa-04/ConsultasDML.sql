@@ -67,3 +67,83 @@ FROM (
     GROUP BY id_usuario
 ) AS resumen;
 GO
+
+-- 5. Lista el producto más vendido por categoría además de su cantidad vendida--
+SELECT 
+    c.nombre AS nombre_categoria,
+    p.nombre AS nombre_producto,
+    SUM(dc.cantidad) AS cantidad_total_vendida
+FROM 
+    categoria c
+INNER JOIN 
+    producto p ON c.id_categoria = p.id_categoria
+INNER JOIN 
+    var_producto vp ON p.id_producto = vp.id_producto
+INNER JOIN 
+    detalle_compras dc ON vp.id_varProductos = dc.id_varProductos
+GROUP BY 
+    c.id_categoria,
+    c.nombre,
+    p.id_producto,
+    p.nombre
+HAVING 
+    SUM(dc.cantidad) = (
+        -- Subconsulta para encontrar el número máximo de ventas de un producto en esa misma categoría
+        SELECT TOP 1 SUM(dc_sub.cantidad)
+        FROM producto p_sub
+        INNER JOIN var_producto vp_sub ON p_sub.id_producto = vp_sub.id_producto
+        INNER JOIN detalle_compras dc_sub ON vp_sub.id_varProductos = dc_sub.id_varProductos
+        WHERE p_sub.id_categoria = c.id_categoria
+        GROUP BY p_sub.id_producto
+        ORDER BY SUM(dc_sub.cantidad) DESC
+    );
+
+
+-- 6. Lista todos los clientes que hayan gastado más de $100.000 en la tienda --
+SELECT 
+    u.id_usuario,
+    u.nombre,
+    u.apellido,
+    u.email,
+    SUM(c.total) AS total_gastado_historico
+FROM 
+    usuario u
+INNER JOIN 
+    compra c ON u.id_usuario = c.id_usuario
+WHERE 
+    u.rol = 'cliente'
+GROUP BY 
+    u.id_usuario,
+    u.nombre,
+    u.apellido,
+    u.email
+HAVING 
+    MAX(c.total) > 100000;
+
+
+-- 7. Lista los 3 Productos que mas ingresos generan por Categoria --
+SELECT 
+    c.nombre AS nombre_categoria,
+    top_prod.nombre_producto,
+    top_prod.ingresos_totales
+FROM 
+    categoria c
+CROSS APPLY (
+    -- Esta subconsulta se ejecuta una vez por cada categoría encontrada
+    SELECT TOP 3 
+        p.nombre AS nombre_producto,
+        SUM(dc.cantidad * dc.precio_unitario) AS ingresos_totales
+    FROM 
+        producto p
+    INNER JOIN 
+        var_producto vp ON p.id_producto = vp.id_producto
+    INNER JOIN 
+        detalle_compras dc ON vp.id_varProductos = dc.id_varProductos
+    WHERE 
+        p.id_categoria = c.id_categoria
+    GROUP BY 
+        p.id_producto,
+        p.nombre
+    ORDER BY 
+        SUM(dc.cantidad * dc.precio_unitario) DESC
+) AS top_prod;
