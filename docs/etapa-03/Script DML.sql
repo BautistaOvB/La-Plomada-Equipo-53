@@ -107,3 +107,73 @@ INSERT INTO detalle_compras (id_compra, id_varProductos, cantidad, precio_unitar
 (6, 1, 1, 8900.00), 
 (7, 2, 3, 11500.00), 
 (8, 1, 2, 7900.00);
+
+--edito productos
+
+------------------------------------------------------------------------
+-- 1. Categorias de pesca (solo las que todavia no existen)
+------------------------------------------------------------------------
+INSERT INTO categoria (nombre)
+SELECT v.nombre
+FROM (VALUES
+    ('Cañas'),
+    ('Reeles'),
+    ('Señuelos'),
+    ('Líneas y anzuelos'),
+    ('Accesorios'),
+    ('Indumentaria'),
+    ('Plomadas y boyas'),
+    ('Camping y conservación')
+) v(nombre)
+WHERE NOT EXISTS (SELECT 1 FROM categoria c WHERE c.nombre = v.nombre);
+
+------------------------------------------------------------------------
+-- 2. Productos: nuevo nombre y nueva categoria
+------------------------------------------------------------------------
+UPDATE p
+SET p.nombre       = v.nombre_nuevo,
+    p.id_categoria = (SELECT MIN(id_categoria) FROM categoria WHERE nombre = v.categoria)
+FROM producto p
+JOIN (VALUES
+    ('Zapatillas Running Pro', 'Señuelo Popper de Superficie 7 cm', 'Señuelos'),
+    ('Camiseta Básica de Algodón', 'Conservadora Térmica 12 L', 'Camping y conservación'),
+    ('Pantalón Jean Slim Fit', 'Plomadas Pack x6 (30 g)', 'Plomadas y boyas'),
+    ('Reloj Cronógrafo Deportivo', 'Botas de Vadeo Impermeables', 'Indumentaria'),
+    ('Mat de Yoga Antideslizante', 'Línea Fluorocarbono 0,25 mm', 'Líneas y anzuelos'),
+    ('Auriculares Inalámbricos Bluetooth', 'Boyas Pack x5', 'Plomadas y boyas'),
+    ('Lámpara de Escritorio LED', 'Caña Surfcasting 4,20 m', 'Cañas'),
+    ('Mochila Urbana Impermeable', 'Giratorios Pack x20', 'Líneas y anzuelos')
+) v(nombre_viejo, nombre_nuevo, categoria) ON p.nombre = v.nombre_viejo;
+
+------------------------------------------------------------------------
+-- 3. Variantes: nueva imagen, descripcion y precio vigente
+------------------------------------------------------------------------
+UPDATE vp
+SET vp.url_img     = v.url_nueva,
+    vp.descripcion = v.descripcion,
+    vp.precio      = v.precio
+FROM var_producto vp
+JOIN (VALUES
+    ('https://img.ejemplo.com/calzado/running-negro-42.jpg', 'https://img.ejemplo.com/senuelos/popper-7cm.jpg', 'Popper de superficie 7 cm, color plateado', 7900.00),
+    ('https://img.ejemplo.com/ropa/camiseta-blanca-m.jpg', 'https://img.ejemplo.com/camping/conservadora-12l.jpg', 'Conservadora térmica de 12 litros, color azul', 11500.00),
+    ('https://img.ejemplo.com/ropa/jean-azul-32.jpg', 'https://img.ejemplo.com/plomadas-boyas/plomadas-30g.jpg', 'Pack de 6 plomadas de 30 g', 3700.00),
+    ('https://img.ejemplo.com/accesorios/reloj-cuero-marron.jpg', 'https://img.ejemplo.com/indumentaria/botas-vadeo.jpg', 'Botas de vadeo impermeables, suela antideslizante', 85000.00),
+    ('https://img.ejemplo.com/deportes/mat-yoga-morado.jpg', 'https://img.ejemplo.com/lineas/fluoro-025.jpg', 'Fluorocarbono 0,25 mm x 100 m', 7300.00),
+    ('https://img.ejemplo.com/tecno/auriculares-negro-anc.jpg', 'https://img.ejemplo.com/plomadas-boyas/boyas-pack-5.jpg', 'Pack de 5 boyas de colores', 4000.00),
+    ('https://img.ejemplo.com/hogar/lampara-led-blanca.jpg', 'https://img.ejemplo.com/canas/surfcasting-420.jpg', 'Caña surfcasting 4,20 m, 3 tramos', 62000.00),
+    ('https://img.ejemplo.com/equipaje/mochila-gris-20l.jpg', 'https://img.ejemplo.com/lineas/giratorios-x20.jpg', 'Pack de 20 giratorios con mosquetón', 5000.00)
+) v(url_vieja, url_nueva, descripcion, precio) ON vp.url_img = v.url_vieja;
+
+------------------------------------------------------------------------
+-- 4. Control: tienen que estar los 8 productos convertidos
+------------------------------------------------------------------------
+IF (SELECT COUNT(*) FROM producto WHERE nombre IN ('Señuelo Popper de Superficie 7 cm', 'Conservadora Térmica 12 L', 'Plomadas Pack x6 (30 g)', 'Botas de Vadeo Impermeables', 'Línea Fluorocarbono 0,25 mm', 'Boyas Pack x5', 'Caña Surfcasting 4,20 m', 'Giratorios Pack x20')) <> 8
+    THROW 50001, 'No se encontraron los 8 productos originales: no se convirtio nada. Revisar nombres en la tabla producto.', 1;
+
+------------------------------------------------------------------------
+-- 5. Borrar las categorias viejas que quedaron sin productos
+------------------------------------------------------------------------
+DELETE c
+FROM categoria c
+WHERE c.nombre IN ('Calzado', 'Ropa Superior', 'Ropa Inferior', 'Deportes', 'Tecnología', 'Hogar', 'Equipaje')
+  AND NOT EXISTS (SELECT 1 FROM producto p WHERE p.id_categoria = c.id_categoria);
