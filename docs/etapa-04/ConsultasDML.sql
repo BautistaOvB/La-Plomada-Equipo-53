@@ -119,6 +119,32 @@ GROUP BY
     u.email
 HAVING 
     MAX(c.total) > 100000;
+GO
+
+-- =====================================================================
+-- [SUGERENCIA DE FIX - Consulta 6]
+-- Motivo: MAX(c.total) evalúa si hubo una compra individual > $100.000.
+-- Para evaluar el gasto histórico acumulado del cliente corresponde SUM(c.total).
+-- Además, se excluyen compras canceladas para no distorsionar el total real.
+-- =====================================================================
+SELECT 
+    u.id_usuario,
+    u.nombre,
+    u.apellido,
+    u.email,
+    SUM(c.total) AS total_gastado_historico
+FROM usuario u
+INNER JOIN compra c ON u.id_usuario = c.id_usuario
+WHERE u.rol = 'cliente'
+  AND c.estado <> 'CANCELADO'
+GROUP BY 
+    u.id_usuario,
+    u.nombre,
+    u.apellido,
+    u.email
+HAVING 
+    SUM(c.total) > 100000;
+GO
 
 
 -- 7. Lista los 3 Productos que mas ingresos generan por Categoria --
