@@ -147,3 +147,44 @@ CROSS APPLY (
     ORDER BY 
         SUM(dc.cantidad * dc.precio_unitario) DESC
 ) AS top_prod;
+
+
+-- 8. Consulta sobre ventas con envío por provincia y ciudad.
+SELECT
+    pr.nombre AS Provincia,
+    ci.nombre AS Ciudad,
+    COUNT(DISTINCT c.id_compra) AS Cantidad_Compras,
+    SUM(dc.cantidad * dc.precio_unitario) AS Total_Facturado
+FROM compra c
+INNER JOIN direccion d ON c.id_direccion = d.id_direccion
+INNER JOIN ciudad ci ON d.id_ciudad = ci.id_ciudad
+INNER JOIN provincia pr ON ci.id_provincia = pr.id_provincia
+INNER JOIN detalle_compras dc ON c.id_compra = dc.id_compra
+WHERE c.retiro_sucursal = 0
+  AND c.estado <> 'CANCELADO'
+GROUP BY pr.nombre, ci.nombre
+HAVING COUNT(DISTINCT c.id_compra) >= 2
+ORDER BY Total_Facturado DESC;
+GO
+
+--Consulta de Variantes con stock que nunca se vendieron 
+SELECT
+    cat.nombre AS Categoria,
+    p.nombre AS Producto,
+    vp.descripcion AS Detalle_Variante,
+    vp.stock AS Stock_Actual,
+    vp.precio AS Precio_Unitario,
+    vp.stock * vp.precio AS Capital_Inmovilizado
+FROM var_producto vp
+INNER JOIN producto p ON vp.id_producto = p.id_producto
+INNER JOIN categoria cat ON p.id_categoria = cat.id_categoria
+WHERE vp.stock > 0
+  AND NOT EXISTS (
+        SELECT 1
+        FROM detalle_compras dc
+        INNER JOIN compra c ON dc.id_compra = c.id_compra
+        WHERE dc.id_varProductos = vp.id_varProductos
+          AND c.estado <> 'CANCELADO'
+  )
+ORDER BY Capital_Inmovilizado DESC;
+GO
