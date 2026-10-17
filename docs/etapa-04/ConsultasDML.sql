@@ -29,6 +29,30 @@ GROUP BY cat.nombre
 ORDER BY Total_Recaudado DESC; 
 GO
 
+-- =====================================================================
+-- [SUGERENCIA DE FIX - Consulta 2]
+-- Motivo: Se agrega el filtro para excluir compras con estado 'CANCELADO'
+-- evitando contabilizar ingresos y unidades de transacciones no concretadas.
+-- Se agrupa también por cat.id_categoria para evitar posibles colisiones de nombres.
+-- =====================================================================
+SELECT 
+    cat.id_categoria,
+    cat.nombre AS Categoria,
+    COUNT(DISTINCT c.id_compra) AS Cantidad_Tickets,
+    SUM(dc.cantidad) AS Unidades_Vendidas,
+    SUM(dc.cantidad * dc.precio_unitario) AS Total_Recaudado
+FROM compra c
+INNER JOIN detalle_compras dc ON c.id_compra = dc.id_compra
+INNER JOIN var_producto vp ON dc.id_varProductos = vp.id_varProductos
+INNER JOIN producto p ON vp.id_producto = p.id_producto
+INNER JOIN categoria cat ON p.id_categoria = cat.id_categoria
+WHERE c.fecha_compra >= '2026-08-01' 
+  AND c.fecha_compra < '2026-11-01'
+  AND c.estado <> 'CANCELADO'
+GROUP BY cat.id_categoria, cat.nombre
+ORDER BY Total_Recaudado DESC;
+GO
+
 -- 3. Generación de comprobante/factura de una venta
 
 DECLARE @IdCompra INT = 1;
