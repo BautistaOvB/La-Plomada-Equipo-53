@@ -331,3 +331,20 @@ INNER JOIN var_producto vp ON m.var_productos_id = vp.id_varProductos
 INNER JOIN producto p ON vp.id_producto = p.id_producto
 ORDER BY m.fecha DESC;
 GO
+
+-- 11. Monitoreo de carritos activos y recaudación potencial
+SELECT 
+    u.id_usuario,
+    u.nombre + ' ' + u.apellido AS Cliente,
+    u.email,
+    COUNT(dc.var_producto_id) AS Variantes_En_Carrito,
+    SUM(dc.cantidad) AS Unidades_Totales,
+    SUM(dc.cantidad * vp.precio) AS Valor_Estimado_Carrito
+FROM carrito car
+INNER JOIN usuario u ON car.id_usuario = u.id_usuario
+INNER JOIN detalle_carrito dc ON car.id = dc.carrito_id
+INNER JOIN var_producto vp ON dc.var_producto_id = vp.id_varProductos
+GROUP BY u.id_usuario, u.nombre, u.apellido, u.email
+HAVING SUM(dc.cantidad) > 0
+ORDER BY Valor_Estimado_Carrito DESC;
+GO
