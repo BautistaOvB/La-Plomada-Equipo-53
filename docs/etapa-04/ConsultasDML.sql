@@ -315,3 +315,19 @@ WHERE vp.stock > 0
   )
 ORDER BY Capital_Inmovilizado DESC;
 GO
+
+-- 10. Auditoría de modificaciones manuales de stock por administrador (RN.19)
+SELECT 
+    m.id_movimiento,
+    CONVERT(VARCHAR(16), m.fecha, 120) AS Fecha_Ajuste,
+    u.nombre + ' ' + u.apellido AS Administrador,
+    p.nombre AS Producto,
+    vp.descripcion AS Detalle_Variante,
+    m.cantidad_modificada AS Ajuste_Unidades,
+    vp.stock AS Stock_Actual_Disponible
+FROM movimiento_stock m
+INNER JOIN usuario u ON m.admin_id = u.id_usuario
+INNER JOIN var_producto vp ON m.var_productos_id = vp.id_varProductos
+INNER JOIN producto p ON vp.id_producto = p.id_producto
+ORDER BY m.fecha DESC;
+GO
