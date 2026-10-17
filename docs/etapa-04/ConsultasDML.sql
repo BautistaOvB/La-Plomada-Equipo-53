@@ -121,6 +121,48 @@ HAVING
         GROUP BY p_sub.id_producto
         ORDER BY SUM(dc_sub.cantidad) DESC
     );
+GO
+
+-- =====================================================================
+-- [SUGERENCIA DE FIX - Consulta 5]
+-- Motivo: Se agrega INNER JOIN con la tabla compra (comp / comp_sub) para 
+-- validar que comp.estado <> 'CANCELADO', evitando que unidades de pedidos
+-- cancelados se computen erróneamente en el total vendido por producto.
+-- =====================================================================
+SELECT 
+    c.nombre AS nombre_categoria,
+    p.nombre AS nombre_producto,
+    SUM(dc.cantidad) AS cantidad_total_vendida
+FROM 
+    categoria c
+INNER JOIN 
+    producto p ON c.id_categoria = p.id_categoria
+INNER JOIN 
+    var_producto vp ON p.id_producto = vp.id_producto
+INNER JOIN 
+    detalle_compras dc ON vp.id_varProductos = dc.id_varProductos
+INNER JOIN 
+    compra comp ON dc.id_compra = comp.id_compra
+WHERE 
+    comp.estado <> 'CANCELADO'
+GROUP BY 
+    c.id_categoria,
+    c.nombre,
+    p.id_producto,
+    p.nombre
+HAVING 
+    SUM(dc.cantidad) = (
+        SELECT TOP 1 SUM(dc_sub.cantidad)
+        FROM producto p_sub
+        INNER JOIN var_producto vp_sub ON p_sub.id_producto = vp_sub.id_producto
+        INNER JOIN detalle_compras dc_sub ON vp_sub.id_varProductos = dc_sub.id_varProductos
+        INNER JOIN compra comp_sub ON dc_sub.id_compra = comp_sub.id_compra
+        WHERE p_sub.id_categoria = c.id_categoria
+          AND comp_sub.estado <> 'CANCELADO'
+        GROUP BY p_sub.id_producto
+        ORDER BY SUM(dc_sub.cantidad) DESC
+    );
+GO
 
 
 -- 6. Lista todos los clientes que hayan gastado más de $100.000 en la tienda --
