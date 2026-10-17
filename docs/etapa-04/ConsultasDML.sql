@@ -77,6 +77,41 @@ INNER JOIN producto p ON vp.id_producto = p.id_producto
 WHERE c.id_compra = @IdCompra;
 GO
 
+-- =====================================================================
+-- [SUGERENCIA DE MEJORA - Consulta 3]
+-- Motivo: Mejorar el comprobante agregando la modalidad de entrega
+-- (RN.21), distinguiendo 'Retiro en Sucursal' de envíos a domicilio 
+-- con su respectiva Ciudad y Provincia.
+-- =====================================================================
+DECLARE @IdCompra INT = 1;
+
+SELECT 
+    c.id_compra AS Nro_Comprobante,
+    CONVERT(VARCHAR(16), c.fecha_compra, 120) AS Fecha,
+    u.nombre + ' ' + u.apellido AS Cliente,
+    c.metodo_pago AS Metodo_Pago,
+    c.estado AS Estado,
+    CASE 
+        WHEN c.retiro_sucursal = 1 THEN 'Retiro en Sucursal'
+        ELSE ci.nombre + ' (' + pr.nombre + ')'
+    END AS Forma_Entrega,
+    p.nombre AS Producto,
+    vp.descripcion AS Detalle_Variante,
+    dc.cantidad AS Cantidad,
+    dc.precio_unitario AS Precio_Unitario,
+    (dc.cantidad * dc.precio_unitario) AS Subtotal_Renglon,
+    c.total AS Total_Factura
+FROM compra c
+INNER JOIN usuario u ON c.id_usuario = u.id_usuario
+LEFT JOIN direccion d ON c.id_direccion = d.id_direccion
+LEFT JOIN ciudad ci ON d.id_ciudad = ci.id_ciudad
+LEFT JOIN provincia pr ON ci.id_provincia = pr.id_provincia
+INNER JOIN detalle_compras dc ON c.id_compra = dc.id_compra
+INNER JOIN var_producto vp ON dc.id_varProductos = vp.id_varProductos
+INNER JOIN producto p ON vp.id_producto = p.id_producto
+WHERE c.id_compra = @IdCompra;
+GO
+
 -- 4. Cálculo de promedio gastado por cliente
 
 SELECT 
