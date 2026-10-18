@@ -348,3 +348,15 @@ GROUP BY u.id_usuario, u.nombre, u.apellido, u.email
 HAVING SUM(dc.cantidad) > 0
 ORDER BY Valor_Estimado_Carrito DESC;
 GO
+
+-- 12. Análisis de rendimiento y ticket promedio por método de pago
+SELECT 
+    c.metodo_pago AS Metodo_Pago,
+    COUNT(c.id_compra) AS Total_Operaciones,
+    SUM(c.total) AS Facturacion_Total,
+    AVG(c.total) AS Ticket_Promedio
+FROM compra c
+WHERE c.estado <> 'CANCELADO'
+GROUP BY c.metodo_pago
+ORDER BY Facturacion_Total DESC;
+GO
