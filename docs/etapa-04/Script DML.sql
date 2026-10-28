@@ -39,8 +39,7 @@ WHERE NOT EXISTS (SELECT 1 FROM ciudad c WHERE c.nombre = v.nombre);
 
 ------------------------------------------------------------------------
 -- 2. Usuarios (1 administrador y 11 clientes) y sus direcciones
---    La contrasena es un texto de ejemplo: con estos usuarios no se puede
---    iniciar sesion en la aplicacion.
+--    La contrasena es un texto de ejemplo: .
 ------------------------------------------------------------------------
 INSERT INTO usuario (email, rol, nombre, apellido, contrasena)
 SELECT v.email, v.rol, v.nombre, v.apellido, '$2y$10$ejemplo.solo.para.pruebas'
