@@ -1,0 +1,40 @@
+1. **Auditoría de variaciones**: Un trigger que detecta modificaciones o borrados sobre la tabla `var_producto` y vuelca la foto completa del registro (junto a los nuevos valores, si aplica) en la tabla `auditoria_var_producto`, adjuntando usuario y fecha.
+2. **Bloqueo de DELETE**: Un trigger sobre la tabla histórica de `compra` que impide que cualquier usuario borre una factura de venta.
+El sistema cuenta con defensas activas. La prueba de actualización de precio guardó correctamente el 10% de aumento y el valor anterior en la tabla de auditoría. La prueba de borrado sobre la tabla compras fue exitosamente denegada por el trigger, emitiendo el mensaje configurado de protección y dejando el registro intacto.
+(1 fila afectada)
+
+(1 fila afectada)
+
+(1 fila afectada)
+
+(1 fila afectada)
+
+(1 fila afectada)
+
+(1 fila afectada)
+
+(3 filas afectadas)
+
+(1 fila afectada)
+
+(1 fila afectada)
+
+(1 fila afectada)
+
+(1 fila afectada)
+Mensaje 50000, nivel 16, estado 1, procedimiento trg_bloquear_delete_compra, línea 13 [línea de inicio de lote 150]
+OPERACION DENEGADA: no se permite eliminar registros de la tabla compra. Modifique su estado a CANCELADO.
+
+se intento borrar un registro de la tabla compra y el trigger intercepto la orden a mitad de camino y lanzo el mensaje de advertencia
+
+(1 fila afectada)
+
+(0 filas afectadas)
+Mensaje recibido: OPERACION DENEGADA: no se permite eliminar registros de la tabla compra. Modifique su estado a CANCELADO.
+
+El sistema atrapó la denegación del trigger, la manejó con éxito y no borró absolutamente nada, garantizando que la información histórica de las ventas se mantenga intacta
+
+(1 fila afectada)
+
+(8 filas afectadas)
+

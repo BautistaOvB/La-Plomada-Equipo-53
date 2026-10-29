@@ -1,0 +1,7 @@
+Se implementó una transacción de venta con control de stock donde:
+1. Se inserta el encabezado en `compra`.
+2. Se inserta el detalle en `detalle_compras`.
+3. Se descuenta el stock en `var_producto`.
+Además, se simularon transacciones anidadas (Casos A, B y C).
+Las pruebas demostraron la atomicidad. Al forzar un error de división por cero tras el primer `INSERT`, el sistema hizo `ROLLBACK` y verificamos que no quedó registrada ni la factura incompleta ni se alteró el stock, manteniendo la integridad de la base de datos.
+![alt text](image.png)
