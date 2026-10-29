@@ -21,6 +21,18 @@
 ## 📂 Estructura del Repositorio y Etapas
 
 El proyecto se encuentra organizado de manera modular por etapas de desarrollo:
+*   ### [📁 Etapa I: Requerimientos y Dominio del Negocio](./docs/etapa-01/)
+    *  Descripción del caso: Breve introducción al rubro elegido y alcance del sistema.
+    *  Reglas de Negocio : Redacción explícita de las reglas que rigen las operaciones.
+    *  Alcance del sistema
+  
+*   ### [📁 Etapa II: Modelo Relacional y DDL](./docs/etapa-02/)
+    *  Diagrama Entidad-Relación (DER): Diagrama con entidades, atributos, relaciones y cardinalidades (1:1, 1:N, N:M). Usando notación P. Chen.
+    *  Transformación al Modelo Relacional: Notación de tablas con claves primarias (PK) y foráneas (FK).
+  proceso de Normalización: Documentación paso a paso de la evolución del modelo:
+  1FN: Eliminación de grupos repetitivos y garantía de atomicidad.
+  2FN: Eliminación de dependencias funcionales parciales en claves compuestas.
+  3 FN: Eliminación de dependencias transitivas en atributos no clave.  
 
 *   ### [📁 Etapa III: Modelo Relacional y DDL](./docs/etapa-03/)
     *   Diseño del modelo entidad-relación y relacional del sistema.
