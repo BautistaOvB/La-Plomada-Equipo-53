@@ -1,0 +1,3 @@
+Los triggers son procedimientos que se ejecutan automáticamente cuando ocurre un evento específico sobre una tabla, típicamente operaciones DML (`INSERT`, `UPDATE`, `DELETE`).
+Son ideales para la auditoría y trazabilidad. Responden preguntas clave de seguridad de la información como: ¿Quién modificó un dato?, ¿Cuándo ocurrió?, ¿Qué valores había antes?. Además, permiten interceptar y bloquear acciones destructivas.
+Se crean con `CREATE TRIGGER`. Para registrar cambios se usa `AFTER UPDATE, DELETE`, capturando la información histórica desde las tablas virtuales `inserted` y `deleted`. Para bloqueos, se utiliza `INSTEAD OF DELETE` y un `RAISERROR`.

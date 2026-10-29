@@ -1,0 +1,3 @@
+Una transacción es un conjunto de operaciones SQL que se ejecutan como una única unidad lógica de trabajo. Garantizan las propiedades ACID: Atomicidad, Consistencia, Aislamiento y Durabilidad.
+Asegura que no quede información incompleta cuando una operación afecta múltiples tablas (ej. compra, detalle, stock). Si un paso falla, todo se revierte.
+Se implementa abriendo la transacción con `BEGIN TRANSACTION`. Si todas las operaciones tienen éxito, se confirma con `COMMIT TRANSACTION`. Si ocurre un error capturado en un `TRY...CATCH`, se deshace todo con `ROLLBACK TRANSACTION`.
