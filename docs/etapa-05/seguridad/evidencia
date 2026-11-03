@@ -1,0 +1,69 @@
+# Evidencia de Ejecución: Seguridad y Permisos en SQL Server
+**Base de Datos:** `La_Plomada_db`  
+**SGBD:** Microsoft SQL Server Express  
+**Módulo:** Etapa V - Mecanismos Avanzados (Seguridad)  
+
+---
+
+## 1. Matriz de Resultados de Pruebas
+
+A continuación se detalla la verificación empírica de las 5 pruebas de seguridad solicitadas en la guía oficial de la cátedra:
+
+| N° | Operación Evaluada | Objeto | Usuario Ejecutor | Tipo de Asignación | Resultado Esperado | Resultado Obtenido | Estado |
+|:--:|:---|:---|:---|:---|:---|:---|:--:|
+| **1** | `SELECT` | `dbo.producto` | `usuario_con_rol` | Mediante Rol (`rol_consulta_productos`) | Consulta exitosa | Recupera registros del catálogo de pesca | **CORRECTO** |
+| **2** | `SELECT` | `dbo.producto` | `usuario_sin_rol` | Sin Rol / Sin Permiso | Acceso denegado (Error 229) | Excepción: Permiso SELECT denegado | **CORRECTO** |
+| **3** | `INSERT` directo | `dbo.compra` | `usuario_admin` | Rol Fijo de BD (`db_owner`) | Inserción exitosa | Fila insertada (1 fila afectada) | **CORRECTO** |
+| **4** | `INSERT` directo | `dbo.compra` | `usuario_lector` | Permiso Directo (solo lectura) | Acceso denegado (Error 229) | Excepción: Permiso INSERT denegado | **CORRECTO** |
+| **5** | `EXECUTE` (SP) | `dbo.sp_RegistrarVentaSimple` | `usuario_lector` | Permiso Directo (`GRANT EXECUTE`) | Ejecución exitosa | Venta registrada mediante lógica del SP | **CORRECTO** |
+
+---
+
+## 2. Registro de Salida de Consola (SQL Server Output)
+
+```text
+------------------------------------------------------------
+>> PRUEBA 1.A: INSERT directo sobre compra como usuario_admin
+(1 fila afectada)
+>> [CORRECTO] usuario_admin pudo insertar directamente.
+
+------------------------------------------------------------
+>> PRUEBA 1.B: INSERT directo sobre compra como usuario_lector
+Mensaje 229, Nivel 14, Estado 5, Línea 3
+Se denegó el permiso INSERT en el objeto 'compra', base de datos 'La_Plomada_db', esquema 'dbo'.
+>> [ACCESO DENEGADO ESPERADO] Se denegó el permiso INSERT en el objeto 'compra', base de datos 'La_Plomada_db', esquema 'dbo'.
+
+------------------------------------------------------------
+>> PRUEBA 1.C: Ejecución de SP como usuario_lector
+>> Venta registrada exitosamente a través del procedimiento dbo.sp_RegistrarVentaSimple.
+(1 fila afectada)
+>> [CORRECTO] usuario_lector pudo operar a través del Procedimiento Almacenado.
+
+------------------------------------------------------------
+>> PRUEBA 2.A: SELECT sobre producto como usuario_con_rol
+id_producto  nombre                          id_categoria
+-----------  ------------------------------  ------------
+1            Caña Spinning Titanium          1
+2            Caña Telescópica Río            1
+3            Reel Frontal Pro                2
+(3 filas afectadas)
+>> [CORRECTO] usuario_con_rol consultó productos exitosamente.
+
+------------------------------------------------------------
+>> PRUEBA 2.B: SELECT sobre producto como usuario_sin_rol
+Mensaje 229, Nivel 14, Estado 5, Línea 3
+Se denegó el permiso SELECT en el objeto 'producto', base de datos 'La_Plomada_db', esquema 'dbo'.
+>> [ACCESO DENEGADO ESPERADO] Se denegó el permiso SELECT en el objeto 'producto', base de datos 'La_Plomada_db', esquema 'dbo'.
+
+============================================================
+>> TODAS LAS PRUEBAS DE SEGURIDAD FINALIZADAS.
+============================================================
+```
+
+---
+
+## 3. Conclusión de Seguridad
+Las pruebas demuestran con éxito la aplicación práctica del **Principio de Mínimo Privilegio**:
+1. Se protege la tabla transaccional `compra`: ningún usuario sin privilegios puede insertar datos directamente, evitando que se registren pedidos falsos o se salteen las validaciones de stock.
+2. Al otorgar únicamente permiso `EXECUTE` sobre los procedimientos almacenados, el motor de base de datos asegura que la única vía de modificación de datos sea respetando la lógica de negocio y las reglas transaccionales ACID preestablecidas.
+3. El uso de roles (`rol_consulta_productos`) simplifica la administración, garantizando que los usuarios con rol puedan consultar el catálogo sin necesidad de configurar permisos tabla por tabla.
