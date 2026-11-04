@@ -21,12 +21,12 @@ Para configurar y administrar índices en SQL Server se utilizan sentencias del 
 El índice agrupado determina el orden físico de almacenamiento de los registros en la tabla basándose en la columna indexada. Solo puede existir uno por tabla.
 ```sql
 CREATE CLUSTERED INDEX IX_NombreIndice ON nombre_tabla(columna);
-
+```
 B. Creación de Índice No Agrupado con Cobertura (Nonclustered Index with INCLUDE)
 Los índices no agrupados son estructuras separadas de los datos. La cláusula INCLUDE permite añadir columnas no clave a nivel de las hojas del índice (índice de cobertura), evitando así que el motor tenga que ir a buscar esos datos a la tabla original (operación conocida como Key Lookup), resolviendo la consulta de forma autónoma.
-
+```sql
 CREATE NONCLUSTERED INDEX IX_NombreIndice ON nombre_tabla(columna_filtro) INCLUDE (columna_adicional);
-
+```
 4. Caso Concreto Aplicado a "La Plomada"
 En el sistema de gestión "La Plomada", se requiere analizar el volumen total de transacciones comerciales emitidas durante ventanas de tiempo específicas (por ejemplo, balances trimestrales).
 
@@ -35,6 +35,9 @@ Escenario: El equipo directivo necesita consultar con frecuencia el importe tota
 Problema de rendimiento detectado: La consulta base lee secuencialmente todos los registros de la tabla compra, lo que se vuelve insostenible en términos de rendimiento a medida que el historial comercial crece, degradando el tiempo de respuesta de los reportes.
 
 Solución implementada: Se simuló un crecimiento histórico inyectando 1.000.000 de registros en la tabla compra. Posteriormente, se ejecutó una sentencia SELECT filtrando un trimestre específico (WHERE fecha_compra BETWEEN '2023-01-01' AND '2023-03-31') y se compararon las métricas de rendimiento y los planes de ejecución bajo tres escenarios distintos para evidenciar el impacto de la indexación.
+
+5. Demostración y Resultados Obtenidos
+A continuación, se detalla el análisis comparativo del impacto en el rendimiento al aplicar diferentes estrategias de indexación sobre la tabla compra, basándonos en las estadísticas arrojadas por SET STATISTICS TIME ON y SET STATISTICS IO ON.
 
 Escenario de Ejecución,Tiempo Total (ms),Lecturas Lógicas,Operación Principal del Plan de Ejecución
 Consulta base (Sin índice óptimo),8645,17291,Table Scan (o Clustered Index Scan en PK)
@@ -48,3 +51,7 @@ Al ejecutar la consulta inicial sin una estrategia de índices focalizada en la 
 Al implementar el índice IX_CompraHistorica_Fecha, el optimizador de consultas adoptó de inmediato una estrategia de búsqueda eficiente (Seek), lo que redujo drásticamente el trabajo del motor y los tiempos de procesamiento.
 
 Finalmente, la creación del índice de cobertura (INCLUDE (total)) optimizó aún más la consulta. Al contener tanto el campo de búsqueda (fecha_compra) como el campo requerido en los resultados (total), SQL Server logró resolver la petición accediendo únicamente a la estructura del índice, prescindiendo por completo de interactuar con las páginas de datos de la tabla, logrando el nivel más alto de eficiencia (Index Seek puro).
+
+
+
+
