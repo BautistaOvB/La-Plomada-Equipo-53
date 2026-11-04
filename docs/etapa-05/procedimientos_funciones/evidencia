@@ -1,0 +1,73 @@
+# Evidencia de Ejecución: Funciones y Procedimientos Almacenados
+
+**Base de Datos:** `La_Plomada_db`  
+
+**SGBD:** Microsoft SQL Server Express  
+
+**Módulo:** Etapa V - Mecanismos Avanzados
+
+---
+
+## 1. Matriz de Resultados de Pruebas
+
+A continuación se detalla la verificación empírica de las pruebas de ejecución para la función escalar y el procedimiento almacenado transaccional:
+
+| N° | Operación Evaluada | Objeto / Mecanismo | Parámetros / Entrada | Condición Evaluada | Resultado Esperado | Resultado Obtenido | Estado |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| **1** | `SELECT` (Función) | `dbo.fn_CalcularTotalGastadoUsuario` | `@id_usuario = 1` | Usuario con compras registradas | Devuelve la suma del campo `total` | Retorna `135800.00` | **CORRECTO** |
+| **2** | `SELECT` (Función) | `dbo.fn_CalcularTotalGastadoUsuario` | `@id_usuario = 8` | Usuario sin compras registradas | Manejo de `NULL` vía `ISNULL` | Retorna `0.00` | **CORRECTO** |
+| **3** | `EXECUTE` (SP - Éxito) | `dbo.sp_RegistrarCompraCompleta` | `@cantidad = 3`, Stock actual = 10 | Stock disponible $\ge$ Cantidad | Inserta compra/detalle, descuenta stock y ejecuta `COMMIT` | Transacción completada y stock actualizado a 7 | **CORRECTO** |
+| **4** | `EXECUTE` (SP - Fallo) | `dbo.sp_RegistrarCompraCompleta` | `@cantidad = 9999`, Stock actual = 10 | Stock disponible < Cantidad | Lanza `RAISERROR` y ejecuta `ROLLBACK` | Excepción: Stock insuficiente (Sin registros parciales) | **CORRECTO** |
+
+---
+
+## 2. Registro de Salida de Consola (SQL Server Output)
+
+```text
+------------------------------------------------------------
+>> PRUEBA 1: Consulta general invoking dbo.fn_CalcularTotalGastadoUsuario
+
+id_usuario  nombre    apellido   email              total_gastado_historico
+----------  --------  ---------  -----------------  -----------------------
+1           Juan      Perez      cliente1@mail.com  135800.00
+2           Maria     Gomez      cliente2@mail.com  18500.00
+3           Luis      Fernandez  cliente3@mail.com  92300.00
+4           Ana       Martinez   cliente4@mail.com  12000.00
+5           Pedro     Sanchez    cliente5@mail.com  67000.00
+6           Laura     Diaz       cliente6@mail.com  8900.00
+7           Diego     Lopez      cliente7@mail.com  34500.00
+8           Carlos    Ruiz       admin1@mail.com    0.00
+(8 filas afectadas)
+
+>> [CORRECTO] La función calculó los acumulados correctamente y aplicó ISNULL(0) para el usuario 8.
+
+------------------------------------------------------------
+>> PRUEBA 2.A: Registro de venta con stock suficiente (Camino feliz)
+(1 fila afectada) -- Inserción en tabla compra
+(1 fila afectada) -- Inserción en tabla detalle_compras
+(1 fila afectada) -- Actualización de stock en var_producto
+
+>> [CORRECTO] Transacción confirmada exitosamente (COMMIT). Compra registrada e inventario actualizado.
+
+------------------------------------------------------------
+>> PRUEBA 2.B: Registro de venta con stock insuficiente (Prueba de Atomicidad)
+Mensaje 50000, Nivel 16, Estado 1, Procedimiento sp_RegistrarCompraCompleta, Línea 41
+Stock insuficiente para completar la operación.
+
+>> [ROLLBACK EXECUTED] Se capturó la excepción y se revirtió la transacción. 
+>> Ningún registro fue insertado en 'compra' ni en 'detalle_compras'.
+
+============================================================
+>> TODAS LAS PRUEBAS DE PROGRAMACIÓN Y TRANSACCIONES FINALIZADAS.
+============================================================
+
+```
+
+---
+
+## 3. Conclusión de Programación y Transacciones
+
+Las pruebas verifican la correcta implementación de la lógica de negocio centralizada y las propiedades **ACID**:
+
+1. **Reutilización y Consistencia:** La función `dbo.fn_CalcularTotalGastadoUsuario` permite consultar de forma transparente el acumulado dinámico de cada cliente sin necesidad de reescribir subconsultas complejas ni agrupar tablas manualmente en cada reporte.
+2. **Garantía de Atomicidad:** El procedimiento almacenado `dbo.sp_RegistrarCompraCompleta` asegura que las ventas operen bajo el principio de "todo o nada". Si el inventario no cubre la demanda, la transacción ejecuta un `ROLLBACK` inmediato, impidiendo la creación de cabeceras de compra huérfanas o incoherencias en el stock.
