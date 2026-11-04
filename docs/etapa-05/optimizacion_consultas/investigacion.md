@@ -27,7 +27,7 @@ Los índices no agrupados son estructuras separadas de los datos. La cláusula I
 ```sql
 CREATE NONCLUSTERED INDEX IX_NombreIndice ON nombre_tabla(columna_filtro) INCLUDE (columna_adicional);
 ```
-4. Caso Concreto Aplicado a "La Plomada"
+## 4. Caso Concreto Aplicado a "La Plomada"
 En el sistema de gestión "La Plomada", se requiere analizar el volumen total de transacciones comerciales emitidas durante ventanas de tiempo específicas (por ejemplo, balances trimestrales).
 
 Escenario: El equipo directivo necesita consultar con frecuencia el importe total de las compras realizadas en el primer trimestre del año.
@@ -36,7 +36,7 @@ Problema de rendimiento detectado: La consulta base lee secuencialmente todos lo
 
 Solución implementada: Se simuló un crecimiento histórico inyectando 1.000.000 de registros en la tabla compra. Posteriormente, se ejecutó una sentencia SELECT filtrando un trimestre específico (WHERE fecha_compra BETWEEN '2023-01-01' AND '2023-03-31') y se compararon las métricas de rendimiento y los planes de ejecución bajo tres escenarios distintos para evidenciar el impacto de la indexación.
 
-5. Demostración y Resultados Obtenidos
+## 5. Demostración y Resultados Obtenidos
 A continuación, se detalla el análisis comparativo del impacto en el rendimiento al aplicar diferentes estrategias de indexación sobre la tabla compra, basándonos en las estadísticas arrojadas por SET STATISTICS TIME ON y SET STATISTICS IO ON.
 
 Escenario de Ejecución,Tiempo Total (ms),Lecturas Lógicas,Operación Principal del Plan de Ejecución
