@@ -36,21 +36,19 @@ Problema de rendimiento detectado: La consulta base lee secuencialmente todos lo
 
 Solución implementada: Se simuló un crecimiento histórico inyectando 1.000.000 de registros en la tabla compra. Posteriormente, se ejecutó una sentencia SELECT filtrando un trimestre específico (WHERE fecha_compra BETWEEN '2023-01-01' AND '2023-03-31') y se compararon las métricas de rendimiento y los planes de ejecución bajo tres escenarios distintos para evidenciar el impacto de la indexación.
 
-## 5. Demostración y Resultados Obtenidos
-A continuación, se detalla el análisis comparativo del impacto en el rendimiento al aplicar diferentes estrategias de indexación sobre la tabla compra, basándonos en las estadísticas arrojadas por SET STATISTICS TIME ON y SET STATISTICS IO ON.
+### 5. Demostración y Resultados Obtenidos
+A continuación, se detalla el análisis comparativo del impacto en el rendimiento al aplicar diferentes estrategias de indexación sobre la tabla `compra`, basándonos en las estadísticas arrojadas por `SET STATISTICS TIME ON` y `SET STATISTICS IO ON`.
 
-Escenario de Ejecución,Tiempo Total (ms),Lecturas Lógicas,Operación Principal del Plan de Ejecución
-Consulta base (Sin índice óptimo),8645,17291,Table Scan (o Clustered Index Scan en PK)
-Creación de Índice Agrupado sobre Fecha,3230,185,Clustered Index Seek
-Índice No Agrupado con Cobertura (INCLUDE total),2854,162,Index Seek
+| Escenario de Ejecución | Tiempo Total (ms) | Lecturas Lógicas | Operación Principal del Plan de Ejecución |
+| :--- | :--- | :--- | :--- |
+| **Consulta base (Sin índice óptimo)** | 8645 | 17291 | Table Scan (o Clustered Index Scan en PK) |
+| **Creación de Índice Agrupado sobre Fecha** | 3230 | 185 | Clustered Index Seek |
+| **Índice No Agrupado con Cobertura (INCLUDE total)** | 2854 | 162 | Index Seek |
 
-Conclusiones de la demostración:
-
-Al ejecutar la consulta inicial sin una estrategia de índices focalizada en la fecha, el motor de base de datos se vio obligado a realizar una costosa operación de escaneo completo (Scan), recorriendo todos los registros de la tabla compra, lo que generó un alto volumen de lecturas lógicas.
-
-Al implementar el índice IX_CompraHistorica_Fecha, el optimizador de consultas adoptó de inmediato una estrategia de búsqueda eficiente (Seek), lo que redujo drásticamente el trabajo del motor y los tiempos de procesamiento.
-
-Finalmente, la creación del índice de cobertura (INCLUDE (total)) optimizó aún más la consulta. Al contener tanto el campo de búsqueda (fecha_compra) como el campo requerido en los resultados (total), SQL Server logró resolver la petición accediendo únicamente a la estructura del índice, prescindiendo por completo de interactuar con las páginas de datos de la tabla, logrando el nivel más alto de eficiencia (Index Seek puro).
+**Conclusiones de la demostración:**
+1. Al ejecutar la consulta inicial sin una estrategia de índices focalizada en la fecha, el motor de base de datos se vio obligado a realizar una costosa operación de escaneo completo (Scan), recorriendo todos los registros de la tabla `compra`, lo que generó un alto volumen de lecturas lógicas.
+2. Al implementar el índice `IX_CompraHistorica_Fecha`, el optimizador de consultas adoptó de inmediato una estrategia de búsqueda eficiente (Seek), lo que redujo drásticamente el trabajo del motor y los tiempos de procesamiento.
+3. Finalmente, la creación del índice de cobertura (`INCLUDE (total)`) optimizó aún más la consulta. Al contener tanto el campo de búsqueda (`fecha_compra`) como el campo requerido en los resultados (`total`), SQL Server logró resolver la petición accediendo únicamente a la estructura del índice, prescindiendo por completo de interactuar con las páginas de datos de la tabla, logrando el nivel más alto de eficiencia (Index Seek puro).
 
 
 
