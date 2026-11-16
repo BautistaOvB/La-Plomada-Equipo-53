@@ -55,13 +55,13 @@ DROP USER IF EXISTS usuario_lector;
 DROP USER IF EXISTS usuario_con_rol;
 DROP USER IF EXISTS usuario_sin_rol;
 
--- Eliminar logins del servidor (a nivel master)
+-- Eliminar logins del servidor (a nivel master si ya existen)
 USE master;
 GO
-DROP LOGIN usuario_admin;
-DROP LOGIN usuario_lector;
-DROP LOGIN usuario_con_rol;
-DROP LOGIN usuario_sin_rol;
+IF EXISTS (SELECT 1 FROM sys.server_principals WHERE name = 'usuario_admin') DROP LOGIN usuario_admin;
+IF EXISTS (SELECT 1 FROM sys.server_principals WHERE name = 'usuario_lector') DROP LOGIN usuario_lector;
+IF EXISTS (SELECT 1 FROM sys.server_principals WHERE name = 'usuario_con_rol') DROP LOGIN usuario_con_rol;
+IF EXISTS (SELECT 1 FROM sys.server_principals WHERE name = 'usuario_sin_rol') DROP LOGIN usuario_sin_rol;
 GO
 
 USE La_Plomada_db;
